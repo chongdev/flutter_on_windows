@@ -20,7 +20,8 @@ class NoteDatabaseSQFLite {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePage);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(path, version: 1); // , onCreate: _createDB
+
   }
 
   Future _createDB(Database db, int version) async {
@@ -96,7 +97,6 @@ CREATE TABLE $tableNotes (
 
   Future close() async {
     final db = await instance.database;
-
     db.close();
   }
 }

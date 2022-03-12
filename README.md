@@ -39,3 +39,8 @@ Hey I was having the same problem I just activate the development settings and r
 - flutter create --platforms=windows,macos,linux .
 - flutter build windows
 
+## แก้ไขปัญหาเกี่ยวกับ Flutter บน Windows
+https://ichi.pro/th/kaekhi-payha-keiyw-kab-flutter-bn-windows-10603120880468
+
+flutter create --platforms=windows,macos,linux .
+

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_on_windows/db/note_database_sqflite_ffi.dart';
 import 'package:flutter_on_windows/db/note_database_sqflite.dart';
 import 'package:flutter_on_windows/models/note.dart';
-import 'package:flutter_on_windows/page/edit_note_page.dart';
+import 'package:flutter_on_windows/screens/note/edit_note_page.dart';
 import 'package:intl/intl.dart';
 
 class NoteDetailPage extends StatefulWidget {

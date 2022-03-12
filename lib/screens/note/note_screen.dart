@@ -1,25 +1,24 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_on_windows/db/note_database_sqflite_ffi.dart';
 import 'package:flutter_on_windows/db/note_database_sqflite.dart';
+import 'package:flutter_on_windows/db/note_database_sqflite_ffi.dart';
 import 'package:flutter_on_windows/models/note.dart';
-import 'package:flutter_on_windows/page/edit_note_page.dart';
-import 'package:flutter_on_windows/page/note_detail_page.dart';
+import 'package:flutter_on_windows/screens/note/edit_note_page.dart';
+import 'package:flutter_on_windows/screens/note/note_detail_page.dart';
 import 'package:flutter_on_windows/widgets/note_card_widget.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-class NotesPage extends StatefulWidget {
-  const NotesPage({Key? key}) : super(key: key);
+class NoteScreen extends StatefulWidget {
+  const NoteScreen({Key? key}) : super(key: key);
 
   @override
-  State<NotesPage> createState() => _NotesPageState();
+  State<NoteScreen> createState() => _NoteScreenState();
 }
 
-class _NotesPageState extends State<NotesPage > {
+class _NoteScreenState extends State<NoteScreen> {
   late List<Note> notes;
   bool isLoading = false;
-
 
   @override
   void initState() {
@@ -30,11 +29,9 @@ class _NotesPageState extends State<NotesPage > {
 
   @override
   void dispose() {
-
-    if( Platform.isWindows ){
+    if (Platform.isWindows) {
       NoteDatabaseSQFLiteFfi.instance.close();
-    }
-    else{
+    } else {
       NoteDatabaseSQFLite.instance.close();
     }
 
@@ -44,10 +41,9 @@ class _NotesPageState extends State<NotesPage > {
   Future refreshNotes() async {
     setState(() => isLoading = true);
 
-    if( Platform.isWindows ){
+    if (Platform.isWindows) {
       notes = await NoteDatabaseSQFLiteFfi.instance.readAllNotes();
-    }
-    else{
+    } else {
       notes = await NoteDatabaseSQFLite.instance.readAllNotes();
     }
 
@@ -66,18 +62,16 @@ class _NotesPageState extends State<NotesPage > {
         ),
         actions: const [Icon(Icons.search), SizedBox(width: 12)],
       ),
-
       body: Center(
         child: isLoading
             ? const CircularProgressIndicator()
             : notes.isEmpty
-            ? const Text(
-          'No Notes',
-          style: TextStyle(color: Colors.white, fontSize: 24),
-        )
-            : buildNotes(),
+                ? const Text(
+                    'No Notes',
+                    style: TextStyle(color: Colors.white, fontSize: 24),
+                  )
+                : buildNotes(),
       ),
-
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         child: const Icon(Icons.add),
@@ -91,27 +85,26 @@ class _NotesPageState extends State<NotesPage > {
     );
   }
 
-
   Widget buildNotes() => MasonryGridView.count(
-    padding: const EdgeInsets.all(8),
-    itemCount: notes.length,
-    // staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-    crossAxisCount: 4,
-    mainAxisSpacing: 4,
-    crossAxisSpacing: 4,
-    itemBuilder: (context, index) {
-      final note = notes[index];
+        padding: const EdgeInsets.all(8),
+        itemCount: notes.length,
+        // staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+        crossAxisCount: 4,
+        mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
+        itemBuilder: (context, index) {
+          final note = notes[index];
 
-      return GestureDetector(
-        onTap: () async {
-          await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => NoteDetailPage(noteId: note.id!),
-          ));
+          return GestureDetector(
+            onTap: () async {
+              await Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => NoteDetailPage(noteId: note.id!),
+              ));
 
-          refreshNotes();
+              refreshNotes();
+            },
+            child: NoteCardWidget(note: note, index: index),
+          );
         },
-        child: NoteCardWidget(note: note, index: index),
       );
-    },
-  );
 }
