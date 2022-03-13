@@ -17,7 +17,18 @@ void main() async {
   Hive.init(appDocDir.path);
   Hive.registerAdapter(ContactAdapter());
 
-  runApp(const MyApp());
+  // runApp(const MyApp());
+
+  // Exit full screen
+  SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+
+  // Start full screen
+  // SystemChrome.setEnabledSystemUIOverlays([]);
+
+  SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft])
+      .then((_) {
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
