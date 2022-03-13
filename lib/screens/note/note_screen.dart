@@ -29,11 +29,11 @@ class _NoteScreenState extends State<NoteScreen> {
 
   @override
   void dispose() {
-    if (Platform.isWindows) {
-      NoteDatabaseSQFLiteFfi.instance.close();
-    } else {
-      NoteDatabaseSQFLite.instance.close();
-    }
+    // if (Platform.isWindows) {
+    //   NoteDatabaseSQFLiteFfi.instance.close();
+    // } else {
+    //   NoteDatabaseSQFLite.instance.close();
+    // }
 
     super.dispose();
   }

@@ -1,20 +1,20 @@
-import 'package:flutter_on_windows/models/note.dart';
+import 'package:flutter_on_windows/models/todo.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-class NoteDatabaseSQFLiteFfi {
-  static final NoteDatabaseSQFLiteFfi instance = NoteDatabaseSQFLiteFfi._init();
+class TodoDatabase {
+  static final TodoDatabase instance = TodoDatabase._init();
 
   static Database? _database;
   var databaseFactory = databaseFactoryFfi;
 
-  NoteDatabaseSQFLiteFfi._init();
+  TodoDatabase._init();
 
   Future<Database> get database async {
     if (_database != null) return _database!;
 
-    _database = await _initDB('notes.db');
+    _database = await _initDB('todos.db');
     return _database!;
   }
 
@@ -27,10 +27,9 @@ class NoteDatabaseSQFLiteFfi {
 
     Database db = await databaseFactory.openDatabase(path);
 
-
     // check init table
     try {
-      await db.rawQuery('SELECT * FROM $tableNotes LIMIT 1');
+      await db.rawQuery('SELECT * FROM $tableTodo LIMIT 1');
     } on Exception catch (_) {
       await _createDB(db, 1);
     }
@@ -45,57 +44,54 @@ class NoteDatabaseSQFLiteFfi {
     const integerType = 'INTEGER NOT NULL';
 
     await db.execute('''
-CREATE TABLE $tableNotes ( 
-  ${NoteFields.id} $idType, 
-  ${NoteFields.isImportant} $boolType,
-  ${NoteFields.number} $integerType,
-  ${NoteFields.title} $textType,
-  ${NoteFields.description} $textType,
-  ${NoteFields.time} $textType
+CREATE TABLE $tableTodo ( 
+  ${TodoFields.id} $idType,
+  ${TodoFields.title} $textType,
+  ${TodoFields.time} $textType
   )
 ''');
   }
 
-  Future<Note> create(Note note) async {
+  Future<Todo> create(Todo todo) async {
     final db = await instance.database;
 
-    final id = await db.insert(tableNotes, note.toJson());
-    return note.copy(id: id);
+    final id = await db.insert(tableTodo, todo.toJson());
+    return todo.copy(id: id);
   }
 
-  Future<Note> readNote(int id) async {
+  Future<Todo> readNote(int id) async {
     final db = await instance.database;
 
     final maps = await db.query(
-      tableNotes,
-      columns: NoteFields.values,
-      where: '${NoteFields.id} = ?',
+      tableTodo,
+      columns: TodoFields.values,
+      where: '${TodoFields.id} = ?',
       whereArgs: [id],
     );
 
     if (maps.isNotEmpty) {
-      return Note.fromJson(maps.first);
+      return Todo.fromJson(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
   }
 
-  Future<List<Note>> readAllNotes() async {
+  Future<List<Todo>> readAllNotes() async {
     final db = await instance.database;
-    final orderBy = '${NoteFields.time} ASC';
-    final result = await db.query(tableNotes, orderBy: orderBy);
+    final orderBy = '${TodoFields.time} ASC';
+    final result = await db.query(tableTodo, orderBy: orderBy);
 
-    return result.map((json) => Note.fromJson(json)).toList();
+    return result.map((json) => Todo.fromJson(json)).toList();
   }
 
-  Future<int> update(Note note) async {
+  Future<int> update(Todo todo) async {
     final db = await instance.database;
 
     return db.update(
-      tableNotes,
-      note.toJson(),
-      where: '${NoteFields.id} = ?',
-      whereArgs: [note.id],
+      tableTodo,
+      todo.toJson(),
+      where: '${TodoFields.id} = ?',
+      whereArgs: [todo.id],
     );
   }
 
@@ -103,8 +99,8 @@ CREATE TABLE $tableNotes (
     final db = await instance.database;
 
     return await db.delete(
-      tableNotes,
-      where: '${NoteFields.id} = ?',
+      tableTodo,
+      where: '${TodoFields.id} = ?',
       whereArgs: [id],
     );
   }

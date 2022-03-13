@@ -20,8 +20,16 @@ class NoteDatabaseSQFLite {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePage);
 
-    return await openDatabase(path, version: 1); // , onCreate: _createDB
+    var db = await openDatabase(path, version: 1);
 
+    // check init table
+    try {
+      await db.rawQuery('SELECT * FROM $tableNotes LIMIT 1');
+    } on Exception catch (_) {
+      await _createDB(db, 1);
+    }
+
+    return db;
   }
 
   Future _createDB(Database db, int version) async {
